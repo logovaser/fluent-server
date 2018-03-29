@@ -1,29 +1,17 @@
 const express = require('express')
-const bodyParser = require('body-parser')
-const cors = require('cors')
 const app = express()
+
+const cors = require('cors')
 app.use(cors())
+
+const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 
-const TEST_DATA = require('./TEST_DATA')
+require('./src/initDB')
+require('./src/initPassport')
 
-let router = express.Router()
-
-router.get('/languages', function (req, res) {
-    res.json(TEST_DATA.languages)
-})
-
-router.patch('/languages', function (req, res) {
-    let index = -1;
-    TEST_DATA.languages.forEach((lang, i) => {
-        if (lang.id === req.body.id) index = i
-    })
-    if (index < 0) return
-    TEST_DATA.languages[index] = req.body
-    res.json(TEST_DATA.languages)
-})
-
-app.use('/api', router)
+app.use('/api/auth', require('./src/api/auth'))
+app.use('/api/languages', require('./src/api/languages'))
 
 const port = 3001
 app.listen(port, () => console.log(`Server is running on port ${port}!`))

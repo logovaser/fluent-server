@@ -6,9 +6,4 @@ const User = new Schema({});
 
 User.plugin(passportLocalMongoose);
 
-try {
-    module.exports = mongoose.model('Users', User);
-}
-catch (e) {
-    module.exports = mongoose.model('Users');
-}
+module.exports = mongoose.model('Users', User);

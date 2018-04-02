@@ -1,21 +1,31 @@
 const express = require('express')
 const router = express.Router()
+const Language = require('../models/Language')
 
-const TEST_DATA = require('../../TEST_DATA')
 
+Language.count({}, (err, count) => {
+    if (count === 0) {
+        Language.create({
+            name: 'English',
+            src: 'https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.1.0/flags/1x1/gb.svg',
+            speakerCount: 4234,
+        });
+        Language.create({
+            name: 'Ukrainian',
+            src: 'https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.1.0/flags/1x1/ua.svg',
+            speakerCount: 104,
+        });
+    }
+})
 
 router.get('/', function (req, res) {
-    res.json(TEST_DATA.languages)
+    Language.find({}, (err, languages) => res.json(languages))
 })
 
 router.patch('/', function (req, res) {
-    let index = -1;
-    TEST_DATA.languages.forEach((lang, i) => {
-        if (lang.id === req.body.id) index = i
-    })
-    if (index < 0) return
-    TEST_DATA.languages[index] = req.body
-    res.json(TEST_DATA.languages)
+    let newItem = req.body;
+
+    Language.findByIdAndUpdate(newItem.id, newItem, (err, language) => res.json(language));
 })
 
 module.exports = router;

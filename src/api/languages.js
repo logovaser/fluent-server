@@ -25,7 +25,7 @@ router.get('/', function (req, res) {
 router.patch('/', function (req, res) {
     let newItem = req.body;
 
-    Language.findByIdAndUpdate(newItem.id, newItem, (err, language) => res.json(language));
+    Language.findByIdAndUpdate(newItem.id, newItem, {new: true}, (err, language) => res.json(language));
 })
 
 module.exports = router;

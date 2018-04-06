@@ -15,13 +15,11 @@ router.post('/login', function (req, res) {
         if (err) throw err;
         if (user) {
             if (bcrypt.compareSync(password, user.hash)) {
-                const token = jwt.sign({id: user.id}, CONFIG.SECRET_KEY, {expiresIn: 60});
+                const token = jwt.sign({id: user.id}, CONFIG.SECRET_KEY, {expiresIn: 1000});
 
-                res.json({
-                    type: 'success',
-                    message: 'Enjoy your token!',
-                    token: token
-                });
+                res.cookie('x-access-token', token, { httpOnly: true })
+                    .status(200)
+                    .send();
             } else res.status(403).send()
         } else res.status(403).send()
     });
@@ -31,16 +29,13 @@ router.post('/register', function (req, res) {
     const {username, password} = req.body;
     if (!username || !password) return res.status(400).send();
 
-    new User({
+    const user = new User({
         username,
         hash: bcrypt.hashSync(password, bcrypt.genSaltSync())
-    }).save();
+    });
+    user.save();
 
-    res.json({type: 'success'})
-});
-
-router.post('/check', function (req, res) {
-    res.json({type: 'success'});
+    res.json({type: 'success', user})
 });
 
 
